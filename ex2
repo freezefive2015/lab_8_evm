@@ -1,0 +1,95 @@
+.data
+scan_short:
+.string "%hd %hd"
+print_short:
+.string "%hd, %hd"
+scan_int:
+.string "%d %d"
+print_int:
+.string "%d, %d"
+scan_long:
+.string "%ld %ld"
+print_long:
+.string "%ld, %ld"
+scan_float:
+.string "%f %f"
+print_float:
+.string "%f, %f"
+scan_double:
+.string "%lf %lf"
+print_double:
+.string "%lf, %lf"
+msg:
+.string "\n"
+        .text
+
+.macro SCAN type p q
+lea scan_\type(%rip), %rcx
+lea \p(%rsp), %rdx
+lea \q(%rsp), %r8
+sub $32, %rsp
+call scanf
+add $32, %rsp
+.endm
+
+.macro MSG
+lea msg(%rip), %rcx
+sub $32, %rsp
+call puts
+add $32, %rsp
+.endm
+
+.macro scan_print type p q
+SCAN \type \p \q
+lea print_\type(%rip), %rcx
+mov \p(%rsp), %rdx
+mov \q(%rsp), %r8
+sub $32, %rsp
+call printf
+add $32, %rsp
+MSG
+.endm
+
+.globl main
+main:
+sub $8, %rsp
+sub $48, %rsp
+
+scan_print short, 2, 0
+scan_print int, 8, 4
+scan_print long, 20, 12
+
+SCAN float, 32, 28
+lea print_float(%rip), %rcx
+cvtss2sd 32(%rsp), %xmm1
+movq  %xmm1, %rdx
+cvtss2sd 28(%rsp), %xmm2
+movq  %xmm2, %r8
+sub $32, %rsp
+call printf
+add $32, %rsp
+MSG
+
+lea scan_double(%rip), %rcx
+lea 44(%rsp), %rdx
+lea 36(%rsp), %r8
+sub $32, %rsp
+call scanf
+add $32, %rsp
+
+lea print_double(%rip), %rcx
+movq 44(%rsp), %rdx
+movq 36(%rsp), %r8
+sub $32, %rsp
+call printf
+add $32, %rsp
+
+lea msg(%rip), %rcx
+sub $32, %rsp
+call puts
+add $32, %rsp
+
+add $48, %rsp
+add $8, %rsp
+xor %eax, %eax
+ret
