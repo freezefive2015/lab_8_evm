@@ -1,0 +1,14 @@
+.data
+msg:
+.string "PIN-21, Team 8, Smirnov D. M., Babich K. A.\n"
+.text
+.globl main
+main:
+sub $8, %rsp
+lea msg(%rip), %rcx
+sub $32, %rsp
+call printf
+add $32, %rsp
+add $8, %rsp
+xor %eax, %eax
+ret
