@@ -1,0 +1,34 @@
+.data
+scan:
+.string "%lf %lf"
+print:
+.string "%lf"
+.text
+.globl main
+main:
+sub $8, %rsp
+sub $16, %rsp
+
+lea scan(%rip), %rcx
+lea 0(%rsp), %rdx
+lea 8(%rsp), %r8
+sub $32, %rsp
+call scanf
+add $32, %rsp
+
+movq 0(%rsp), %xmm0
+movq 8(%rsp), %xmm1
+sub $32, %rsp
+call pow
+add $32, %rsp
+
+lea print(%rip), %rcx
+movq %xmm0, %rdx
+sub $32, %rsp
+call printf
+add $32, %rsp
+
+add $16, %rsp
+add $8, %rsp
+xor %eax, %eax
+ret
