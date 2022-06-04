@@ -1,0 +1,49 @@
+.data
+scan:
+.string "%llu %u"
+print:
+.string "=%llu\n"
+        .text
+
+
+.globl main
+main:
+sub $8, %rsp
+sub $16, %rsp
+
+lea scan(%rip), %rcx
+lea 0(%rsp), %rdx
+lea 8(%rsp), %r8
+sub $32, %rsp
+call scanf
+add $32, %rsp
+
+mov $3, %r8
+mov 0(%rsp), %rax
+
+cycle:
+
+bt $0, %rax
+jc mark
+shr $1, %rax
+jmp endif
+mark:
+mul %r8
+inc %rax
+endif:
+
+lea print(%rip), %rcx
+push %rax
+mov %rax, %rdx
+sub $32, %rsp
+call printf
+add $32, %rsp
+pop %rax
+
+decl 8(%rsp)
+jnz cycle
+
+add $16, %rsp
+add $8, %rsp
+xor %eax, %eax
+ret
